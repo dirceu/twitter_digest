@@ -1,12 +1,14 @@
 # Simple twitter digest. This is experimental code, no warranty or guarantee it will work.
 # Author: Dirceu Pereira Tiegs (http://dirceu.info).
 
-require 'twitter'
+pwd = File.expand_path('.') + '/'
+
+require pwd + 'twitter'
 require 'rss/maker'
 
 class Twitter
   def last_tweets
-    filename = 'last_id.txt'
+    filename = pwd + 'last_id.txt'
     begin
       last_id = open(filename, 'r') { |f| f.read.to_i }
       tweets = self.timeline(:friends, :query => {:since_id => last_id})
@@ -22,7 +24,7 @@ class Twitter
   end
 end
 
-config = YAML::load(open('config.yml'))['config']
+config = YAML::load(open(pwd + 'config.yml'))['config']
 twitter = Twitter.new(config['email'], config['password'])
 tweets = twitter.last_tweets
 if tweets.empty?
@@ -48,4 +50,4 @@ content = RSS::Maker.make('2.0') do |m|
   i.date = Time.now
 end
 
-open('twitter.xml', 'w') { |f| f.write(content) }
+open(pwd + 'twitter.xml', 'w') { |f| f.write(content) }
